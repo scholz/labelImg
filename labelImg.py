@@ -263,6 +263,9 @@ class MainWindow(QMainWindow, WindowMixin):
 
         applyBaseToNextPicture = action(getStr('applyBaseToNextPicture'), self.applyBaseToNextPicture,
                              'Ctrl+Alt+n', 'fastforward', getStr('applyBaseToNextPictureDetail'))
+        
+        autoSetBaseAndApplyBaseToNextPicture = action(getStr('autoSetBaseAndApplyBaseToNextPicture'), self.autoSetBaseAndApplyBaseToNextPicture,
+                             'f', 'fastforward', getStr('applyBaseToNextPictureDetail'))
 
         openNextImg = action(getStr('nextImg'), self.openNextImg,
                              'd', 'next', getStr('nextImgDetail'))
@@ -400,7 +403,8 @@ class MainWindow(QMainWindow, WindowMixin):
         self.actions = struct(save=save, save_format=save_format, saveAs=saveAs, open=open, close=close, resetAll = resetAll, deleteImg = deleteImg,
                               lineColor=color1, create=create, delete=delete, edit=edit, copy=copy,
                               createMode=createMode, editMode=editMode, advancedMode=advancedMode, videoFrameMode=videoFrameMode,
-                              setCurrentBase=setCurrentBase, applyCurrentBase=applyCurrentBase, applyBaseToNextPicture=applyBaseToNextPicture, 
+                              setCurrentBase=setCurrentBase, applyCurrentBase=applyCurrentBase, applyBaseToNextPicture=applyBaseToNextPicture,
+                              autoSetBaseAndApplyBaseToNextPicture = autoSetBaseAndApplyBaseToNextPicture,
                               shapeLineColor=shapeLineColor, shapeFillColor=shapeFillColor,
                               zoom=zoom, zoomIn=zoomIn, zoomOut=zoomOut, zoomOrg=zoomOrg,
                               fitWindow=fitWindow, fitWidth=fitWidth,
@@ -413,7 +417,7 @@ class MainWindow(QMainWindow, WindowMixin):
                               beginnerContext=(create, edit, copy, delete),
                               advancedContext=(createMode, editMode, edit, copy,
                                                delete, shapeLineColor, shapeFillColor),
-                              videoFrameContext=(setCurrentBase, applyCurrentBase, applyBaseToNextPicture),
+                              videoFrameContext=(setCurrentBase, applyCurrentBase, applyBaseToNextPicture, autoSetBaseAndApplyBaseToNextPicture),
                               onLoadActive=(
                                   close, create, createMode, editMode),
                               onShapesPresent=(saveAs, hideAll, showAll))
@@ -473,7 +477,7 @@ class MainWindow(QMainWindow, WindowMixin):
             createMode, editMode, None,
             hideAll, showAll)
 
-        self.actions.videoFrame = (setCurrentBase, applyCurrentBase, applyBaseToNextPicture)
+        self.actions.videoFrame = (setCurrentBase, applyCurrentBase, applyBaseToNextPicture, autoSetBaseAndApplyBaseToNextPicture)
 
         self.statusBar().showMessage('%s started.' % __appname__)
         self.statusBar().show()
@@ -721,11 +725,10 @@ class MainWindow(QMainWindow, WindowMixin):
                     QMessageBox.Ok
                 )
         return
-
+    
+    
     def applyBaseToNextPicture(self):
         # Apply changes directly to next picture
-        self.setCurrentBase()
-        '''
         if len(self.shapesBase) <= 0:
             QMessageBox.question(self, "No Base selected", 
                     ("You are trying to use the next Frame Feature, but you haven't set a base, yet.\n\n"
@@ -733,8 +736,15 @@ class MainWindow(QMainWindow, WindowMixin):
                     QMessageBox.Ok
                 )
         return
-        '''
 
+        self.openNextImg()
+        self.applyCurrentBase()
+        return
+
+
+    def autoSetBaseAndApplyBaseToNextPicture(self):
+        # Apply changes directly to next picture
+        self.setCurrentBase()
         self.openNextImg()
         self.applyCurrentBase()
         return
