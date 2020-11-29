@@ -724,13 +724,17 @@ class MainWindow(QMainWindow, WindowMixin):
 
     def applyBaseToNextPicture(self):
         # Apply changes directly to next picture
+        self.setCurrentBase()
+        '''
         if len(self.shapesBase) <= 0:
             QMessageBox.question(self, "No Base selected", 
                     ("You are trying to use the next Frame Feature, but you haven't set a base, yet.\n\n"
                     "This Feature only works, when you have set a base, because it automatically applies the current base to the next frame."),
                     QMessageBox.Ok
                 )
-            return
+        return
+        '''
+
         self.openNextImg()
         self.applyCurrentBase()
         return
